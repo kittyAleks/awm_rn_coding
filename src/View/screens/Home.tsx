@@ -1,4 +1,4 @@
-import React, {FC, useState} from 'react';
+import React, {FC, useEffect, useRef, useState} from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   ScrollView,
   FlatList,
   Dimensions,
+  Animated,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -77,6 +78,16 @@ const {width} = Dimensions.get('window');
 const CARD_WIDTH = (width - 24 * 2 - 24) / 2;
 export const Home: FC<MainStackScreenProps> = () => {
   const [isLiked, setIsLiked] = useState({});
+  const [activeIndex, setActiveIndex] = useState(0);
+  const indicatorPosition = useRef(new Animated.Value(0)).current;
+  const navigationState = ['Listed', 'Booked', 'Wishlisted'];
+
+  useEffect(() => {
+    Animated.spring(indicatorPosition, {
+      toValue: activeIndex * (100 / navigationState.length),
+      useNativeDriver: false,
+    }).start();
+  }, [activeIndex, navigationState.length]);
 
   return (
     <View style={styles.container}>
@@ -120,7 +131,6 @@ export const Home: FC<MainStackScreenProps> = () => {
           </TouchableOpacity>
         </View>
       </LinearGradient>
-      {/*<ScrollView style={styles.container}>*/}
 
       <ScrollView>
         <View style={styles.textExperience}>
@@ -175,17 +185,38 @@ export const Home: FC<MainStackScreenProps> = () => {
             Kate’s Adventures
           </Text>
         </View>
-        <View
-          style={{
-            borderWidth: 1,
-            flexDirection: 'row',
-            marginVertical: 30,
-            paddingVertical: 20,
-          }}>
-          <Text>fjfjfjfj</Text>
-          <Text>fjfjfjfj</Text>
-          <Text>fjfjfjfj</Text>
+        <View style={styles.containerTab}>
+          {navigationState.map((item, index) => (
+            <TouchableOpacity
+              key={index}
+              style={[styles.tab, activeIndex === index && styles.activeTab]}
+              onPress={() => setActiveIndex(index)}>
+              <Text
+                style={[
+                  styles.tabText,
+                  activeIndex === index && styles.activeTabText,
+                ]}>
+                {item}
+              </Text>
+            </TouchableOpacity>
+          ))}
+          <Animated.View
+            style={[
+              styles.indicator,
+              {
+                width: '20%',
+                left: indicatorPosition.interpolate({
+                  inputRange: [0, 100],
+                  outputRange: [
+                    `${(33.3 - 20) / 2}%`,
+                    `${100 - (33.3 - 20) / 2}%`,
+                  ],
+                }),
+              },
+            ]}
+          />
         </View>
+        <Text style={{marginLeft: 20, marginVertical: 20}}>December</Text>
         <FlatList
           snapToInterval={CARD_WIDTH + 24} //Ширина карточки плюс отступ между ними
           snapToAlignment={'start'}
@@ -195,7 +226,7 @@ export const Home: FC<MainStackScreenProps> = () => {
           renderItem={({item}) => renderItem({item, isLiked, setIsLiked})}
           keyExtractor={item => item.id}
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{paddingHorizontal: 24}} // Отступы по краям списка
+          contentContainerStyle={{paddingHorizontal: 24}}
           ItemSeparatorComponent={() => <View style={{width: 24}} />}
         />
       </ScrollView>

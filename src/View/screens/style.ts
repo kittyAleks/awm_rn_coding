@@ -87,4 +87,35 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     flexWrap: 'wrap',
   },
+
+  containerTab: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    position: 'relative',
+    marginVertical: 20,
+  },
+  tab: {
+    paddingVertical: 10,
+    flex: 1,
+    alignItems: 'center',
+    marginHorizontal: 20,
+  },
+  activeTab: {
+    borderBottomWidth: 3,
+    borderBottomColor: 'black',
+  },
+  tabText: {
+    color: 'grey',
+    paddingRight: 10,
+  },
+  activeTabText: {
+    color: 'black',
+  },
+  indicator: {
+    position: 'absolute',
+    bottom: 0,
+    height: 3,
+    backgroundColor: 'black',
+  },
 });
